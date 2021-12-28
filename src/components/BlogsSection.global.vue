@@ -1,6 +1,6 @@
 <template>
   <nav class="py-6 mx-6 border-b">
-    <p class="font- bold pb-2">All Blogs:</p>
+    <p class="font- bold pb-2">{{ blok.title }}</p>
     <ol>
       <li class="list-disc list-inside" v-for='blog in blogs' :key='blog.uuid'>
         <a :href="blog.real_path" class="text-blue-500 hover:underline">{{ blog.name }}</a>
@@ -8,13 +8,16 @@
       </li>
     </ol>
   </nav>
-
 </template>
 
 <script setup>
   import { ref, onMounted } from 'vue'
   import StoryBlokClient from 'storyblok-js-client'
   import { formatDistance } from 'date-fns'
+
+	const props = defineProps({
+		blok: Object
+	})
 
 
   const StoryBlok = new StoryBlokClient({
@@ -49,4 +52,3 @@
 
 
 </script>
-
