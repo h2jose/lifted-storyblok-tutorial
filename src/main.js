@@ -13,13 +13,28 @@ const app = createApp(Root)
 // app.component('otro-blogs-sections', OtroBlogsSection)
 
 const components = import.meta.globEager('./components/**/*.global.vue')
-console.log(components)
-
 Object.entries(components).forEach( ([path, definition]) => {
-	console.log(path)
 	const componentName = path.split('/').pop().replace(/\..+/,'')
-	console.log(componentName)
 	app.component(componentName, definition.default)
+})
+
+app.directive('editable', {
+  beforeMount(el, binding) {
+    if (typeof binding.value._editable === 'undefined') {
+      return
+    }
+    const options = JSON.parse(
+      binding.value._editable.replace('<!--#storyblok#', '').replace('-->', '')
+    )
+    el.setAttribute('data-blok-c', JSON.stringify(options))
+    el.setAttribute('data-blok-uid', `${options.id}-${options.uid}`)
+    const className = 'storyblok__outline'
+    if (el.classList) {
+      el.classList.add(className)
+    } else if (!new RegExp(`\\b${className}\\b`).test(el.className)) {
+      el.className += ` ${className}`
+    }
+  },
 })
 
 

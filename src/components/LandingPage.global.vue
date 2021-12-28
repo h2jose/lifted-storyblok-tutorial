@@ -4,8 +4,7 @@
 		v-for="component in blok.components"
 		:blok="component"
 	 />
-
-	 <pre>{{blok}}</pre>
+		<!-- v-editable="ExtractRawComponents" -->
 </template>
 
 <script setup>
@@ -13,5 +12,6 @@
 	const props = defineProps({
 		blok: Object
 	})
+
 </script>
 

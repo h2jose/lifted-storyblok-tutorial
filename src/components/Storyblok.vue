@@ -14,13 +14,16 @@
 
   onMounted( async () => {
 
-    const storyblokBridgeInstance = new StoryblokBridge()
+    const storyblokBridgeInstance = new StoryblokBridge({
+      resolve_relations:'featured-blogs-section.featured_blogs'
+    })
     storyblokBridgeInstance.on('input', (payload) => {
       data.value = payload.story.content
     })
 
     data.value = await StoryBlok.get(`cdn/stories/${location.pathname}`, {
-      version: import.meta.env.VITE_STORYBLOK_VERSION
+      version: import.meta.env.VITE_STORYBLOK_VERSION,
+      resolve_relations:'featured-blogs-section.featured_blogs'
     }).then( ({data}) => data.story.content )
 
   })
