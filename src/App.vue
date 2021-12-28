@@ -5,6 +5,7 @@
     <ol>
       <li class="list-disc list-inside" v-for='blog in blogs' :key='blog.uuid'>
         <a :href="blog.real_path" class="text-blue-500 hover:underline">{{ blog.name }}</a>
+        <span> (published {{ formatDate(blog.published_at)}})</span>
       </li>
     </ol>
   </nav>
@@ -15,7 +16,9 @@
     </h1>
     <div class="py-6" v-html="resolver.render(data.description)" />
 
-    <img :src="data.image.filename" alt="" />
+    <!-- <img :src="transformImage(data.image.filename,'200x200')" alt="" /> -->
+    <img :src="transformImage(data.image.filename,'200x0/filters:quality(70):format(webp)')" alt="" />
+    <!-- <img :src="transformImage(data.image.filename,'0x200')" alt="" /> -->
   </div>
 
 </template>
@@ -24,21 +27,36 @@
   import { ref, onMounted } from 'vue'
   import StoryBlokClient from 'storyblok-js-client'
   import RichTextResolver from 'storyblok-js-client/dist/rich-text-resolver.es'
+  import { formatDistance } from 'date-fns'
 
   const resolver = new RichTextResolver()
 
   const StoryBlok = new StoryBlokClient({
     accessToken: import.meta.env.VITE_STORYBLOK_TOKEN
   })
+
+  const formatDate = (date) => {
+    console.log(date)
+    return formatDistance(new Date(date), new Date(), {addSuffix:true} )
+  }
+
+  const transformImage = (image, param = '') => {
+    return image.replace(
+      'https://a.storyblok.com',
+      `https://img2.storyblok.com/${param}`
+    )
+  }
+
   const data = ref(null)
   const blogs = ref({})
 
   onMounted( async () => {
 
-    blogs.value = await StoryBlok.get(`cdn/links`, {
+    blogs.value = await StoryBlok.get(`cdn/stories`, {
       version: import.meta.env.VITE_STORYBLOK_VERSION,
       starts_with: 'blog/',
-    }).then( ({data}) => data.links )
+      sort_by: 'published_at:asc'
+    }).then( ({data}) => data.stories )
 
     data.value = await StoryBlok.get(`cdn/stories/${location.pathname}`, {
       version: import.meta.env.VITE_STORYBLOK_VERSION
