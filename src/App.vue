@@ -36,7 +36,6 @@
   })
 
   const formatDate = (date) => {
-    console.log(date)
     return formatDistance(new Date(date), new Date(), {addSuffix:true} )
   }
 
@@ -51,6 +50,11 @@
   const blogs = ref({})
 
   onMounted( async () => {
+
+    const storyblokBridgeInstance = new StoryblokBridge()
+    storyblokBridgeInstance.on('input', (payload) => {
+      data.value = payload.story.content
+    })
 
     blogs.value = await StoryBlok.get(`cdn/stories`, {
       version: import.meta.env.VITE_STORYBLOK_VERSION,
